@@ -25,10 +25,17 @@ const keyword = system.args[1];
 var time = Date.now();
 
 page.open('https://www.baidu.com/s?wd=' + encodeURIComponent(keyword), function(status) {
+  time = Date.now() - time;
+
   if (status !== 'success') {
-    console.log('FAIL to load the address');
+    console.log(JSON.stringify({
+      code: 0, //返回状态码，1为成功，0为失败
+      msg: '抓取失败', //返回的信息
+      word: keyword, //抓取的关键字
+      time: time, //任务的时间
+      dataList: data,
+    }));
   } else {
-    time = Date.now() - time;
     console.log('time:' + time);
 
     const data = page.evaluate(function() {
@@ -36,7 +43,7 @@ page.open('https://www.baidu.com/s?wd=' + encodeURIComponent(keyword), function(
       const arr = [];
 
       for (var i = 0; i < res.length; i++) {
-        var item = $(res[i]);
+        const item = $(res[i]);
 
         arr.push({
           title: item.find('h3.t').text(),
